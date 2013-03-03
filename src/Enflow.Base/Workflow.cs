@@ -12,8 +12,8 @@ namespace Enflow.Base
     {
         private readonly IBusinessRule<T> _preBusinessRule;
 
-        public Workflow() { }
-        public Workflow(IBusinessRule<T> preBusinessRule) { _preBusinessRule = preBusinessRule; }
+        protected Workflow() { }
+        protected Workflow(IBusinessRule<T> preBusinessRule) { _preBusinessRule = preBusinessRule; }
 
         public virtual void Execute(T candidate)
         {
