@@ -1,7 +1,7 @@
 ﻿
 namespace Enflow.Base.Test
 {
-    public class CounterModel : IEnflowModel<CounterModel>
+    public class CounterModel : IModel<CounterModel>
     {
         public int Counter { get; private set; }
         public void Increment() { Counter++; }

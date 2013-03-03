@@ -16,7 +16,7 @@ namespace Enflow.Base
 {
     /// <summary>Interface for Enflow business rules. Can only be applied to core types.</summary>
     /// <typeparam name="T"></typeparam>
-    public interface IBusinessRule<in T> where T : IEnflowModel<T>
+    public interface IBusinessRule<in T> where T : IModel<T>
     {
         bool IsSatisfied(T candidate);
     }
@@ -25,7 +25,7 @@ namespace Enflow.Base
 
     /// <summary>Composite business rule where both input rules must be satisfied.</summary>
     /// <typeparam name="T"></typeparam>
-    public class AndBusinessRule<T> : IBusinessRule<T> where T : IEnflowModel<T> 
+    public class AndBusinessRule<T> : IBusinessRule<T> where T : IModel<T> 
     {
         private readonly IBusinessRule<T> _ruleA;
         private readonly IBusinessRule<T> _ruleB;
@@ -41,7 +41,7 @@ namespace Enflow.Base
 
     /// <summary>Composite business rule where at least one of the input rules must be satisfied.</summary>
     /// <typeparam name="T"></typeparam>
-    public class OrBusinessRule<T> : IBusinessRule<T> where T : IEnflowModel<T> 
+    public class OrBusinessRule<T> : IBusinessRule<T> where T : IModel<T> 
     {
         private readonly IBusinessRule<T> _ruleA;
         private readonly IBusinessRule<T> _ruleB;
@@ -57,7 +57,7 @@ namespace Enflow.Base
 
     /// <summary>Business rule that enforces a logical NOT of the input rule.</summary>
     /// <typeparam name="T"></typeparam>
-    public class NotBusinessRule<T> : IBusinessRule<T> where T : IEnflowModel<T> 
+    public class NotBusinessRule<T> : IBusinessRule<T> where T : IModel<T> 
     {
         private readonly IBusinessRule<T> _rule;
         internal NotBusinessRule(IBusinessRule<T> rule) { _rule = rule; }
@@ -67,17 +67,17 @@ namespace Enflow.Base
     /// <summary>Facilitates the fluent API for composing business rules from atomic constituents.</summary>
     public static class Extensions
     {
-        public static IBusinessRule<T> And<T>(this IBusinessRule<T> ruleA, IBusinessRule<T> ruleB) where T : IEnflowModel<T> 
+        public static IBusinessRule<T> And<T>(this IBusinessRule<T> ruleA, IBusinessRule<T> ruleB) where T : IModel<T> 
         {
             return new AndBusinessRule<T>(ruleA, ruleB);
         }
 
-        public static IBusinessRule<T> Or<T>(this IBusinessRule<T> ruleA, IBusinessRule<T> ruleB) where T : IEnflowModel<T> 
+        public static IBusinessRule<T> Or<T>(this IBusinessRule<T> ruleA, IBusinessRule<T> ruleB) where T : IModel<T> 
         {
             return new OrBusinessRule<T>(ruleA, ruleB);
         }
 
-        public static IBusinessRule<T> Not<T>(this IBusinessRule<T> rule) where T : IEnflowModel<T> 
+        public static IBusinessRule<T> Not<T>(this IBusinessRule<T> rule) where T : IModel<T> 
         {
             return new NotBusinessRule<T>(rule);
         }

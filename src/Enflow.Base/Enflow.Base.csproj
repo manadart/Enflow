@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Exceptions\BusinessRuleException.cs" />
     <Compile Include="Exceptions\WorkflowException.cs" />
-    <Compile Include="EnflowModel.cs" />
+    <Compile Include="Model.cs" />
     <Compile Include="BusinessRule.cs" />
     <Compile Include="Exceptions\WorkflowFactoryException.cs" />
     <Compile Include="Workflow.cs" />

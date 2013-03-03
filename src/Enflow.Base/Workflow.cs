@@ -3,12 +3,12 @@ namespace Enflow.Base
 {
     /// <summary>Interface for transitioning Enflow model instances through workflows.</summary>
     /// <typeparam name="T"></typeparam>
-    public interface IWorkflow<in T> where T : IEnflowModel<T>
+    public interface IWorkflow<in T> where T : IModel<T>
     {
         void Execute(T candidate);
     }
 
-    public abstract class Workflow<T> : IWorkflow<T> where T : IEnflowModel<T>
+    public abstract class Workflow<T> : IWorkflow<T> where T : IModel<T>
     {
         private readonly IBusinessRule<T> _preBusinessRule;
 
