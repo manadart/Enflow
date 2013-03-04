@@ -15,16 +15,19 @@ namespace Enflow.Base
         protected Workflow() { }
         protected Workflow(IBusinessRule<T> preBusinessRule) { _preBusinessRule = preBusinessRule; }
 
+        /// <summary>Validates the pre-condition business rule and executes the workflow logic.</summary>
+        /// <param name="candidate"></param>
         public virtual void Execute(T candidate)
         {
             ValidateBusinessRule(candidate, _preBusinessRule); 
             ExecuteWorkflow(candidate);
-            // Todo: validate post rule.
+            // Todo: implement post-condition rule validation.
         }
 
+        /// <summary>Workflow logic *Not* including business rule validation.</summary>
+        /// <param name="candidate"></param>
         protected abstract void ExecuteWorkflow(T candidate);
 
-        // Todo: implement message in business rule for failure scenario.
         private static void ValidateBusinessRule(T candidate, IBusinessRule<T> rule)
         {
             if (rule == null) return;

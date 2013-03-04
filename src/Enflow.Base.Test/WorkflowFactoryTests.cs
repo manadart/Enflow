@@ -12,6 +12,8 @@ namespace Enflow.Base.Test
         public TestFactory() { Register(Workflows.Counter, () => new CounterIncrementWorkflow()); }
     }
 
+    public class Dummy : IModel<Dummy> { }
+
     public class WorkflowFactoryTests
     {
         [Fact]
@@ -23,7 +25,15 @@ namespace Enflow.Base.Test
         [Fact]
         public void ThrowsUnresolvedException()
         {
-            Assert.Throws<WorkflowFactoryException>(() => new TestFactory().Get<CounterModel>("non registered name"));
+            var message = Assert.Throws<WorkflowFactoryException>(() => new TestFactory().Get<CounterModel>("non registered name")).Message;
+            Assert.Equal("Unable to resolve workflow with name: non registered name", message);
+        }
+
+        [Fact]
+        public void ThrowsExceptionForNonMatchingGenericArgument()
+        {
+            var message = Assert.Throws<WorkflowFactoryException>(() => new TestFactory().Get<Dummy>(Workflows.Counter)).Message;
+            Assert.Equal("Wrong generic argument supplied for workflow with name: " + Workflows.Counter, message);
         }
     }
 }

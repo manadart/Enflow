@@ -19,8 +19,12 @@ namespace Enflow.Base
 
         public IWorkflow<T> Get<T>(string name) where T : IModel<T>
         {
-            try { return _registrations[name].Invoke() as IWorkflow<T>; }
-            catch (Exception) { throw new WorkflowFactoryException("Unable to resolve workflow with name: " + name); }           
+            try
+            {
+                return (IWorkflow<T>) _registrations[name].Invoke();
+            }
+            catch (KeyNotFoundException) { throw new WorkflowFactoryException("Unable to resolve workflow with name: " + name); }
+            catch (InvalidCastException) { throw new WorkflowFactoryException("Wrong generic argument supplied for workflow with name: " + name); }
         }
     }
 }
