@@ -31,7 +31,7 @@ namespace Enflow.Base
         private static void ValidateBusinessRule(T candidate, IBusinessRule<T> rule)
         {
             if (rule == null) return;
-            if (!rule.IsSatisfied(candidate)) throw new BusinessRuleException();
+            if (!rule.IsSatisfied(candidate)) throw new BusinessRuleException(rule.Description);
         }
     }
 }

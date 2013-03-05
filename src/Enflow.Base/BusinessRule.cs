@@ -18,14 +18,19 @@ namespace Enflow.Base
     /// <typeparam name="T"></typeparam>
     public interface IBusinessRule<in T> where T : IModel<T>
     {
-        bool IsSatisfied(T candidate);
+        string Description { get; set; }
+        bool IsSatisfied(T candidate);       
     }
 
-    //Todo: Add abstract class here.
+    public abstract class BusinessRule<T> : IBusinessRule<T> where T : IModel<T>
+    {
+        public string Description { get; set; }
+        public abstract bool IsSatisfied(T candidate);
+    }
 
     /// <summary>Composite business rule where both input rules must be satisfied.</summary>
     /// <typeparam name="T"></typeparam>
-    public class AndBusinessRule<T> : IBusinessRule<T> where T : IModel<T> 
+    public class AndBusinessRule<T> : BusinessRule<T> where T : IModel<T> 
     {
         private readonly IBusinessRule<T> _ruleA;
         private readonly IBusinessRule<T> _ruleB;
@@ -36,12 +41,12 @@ namespace Enflow.Base
             _ruleB = ruleB;
         }
 
-        public bool IsSatisfied(T candidate) { return _ruleA.IsSatisfied(candidate) && _ruleB.IsSatisfied(candidate); }
+        public override bool IsSatisfied(T candidate) { return _ruleA.IsSatisfied(candidate) && _ruleB.IsSatisfied(candidate); }
     }
 
     /// <summary>Composite business rule where at least one of the input rules must be satisfied.</summary>
     /// <typeparam name="T"></typeparam>
-    public class OrBusinessRule<T> : IBusinessRule<T> where T : IModel<T> 
+    public class OrBusinessRule<T> : BusinessRule<T> where T : IModel<T> 
     {
         private readonly IBusinessRule<T> _ruleA;
         private readonly IBusinessRule<T> _ruleB;
@@ -52,16 +57,16 @@ namespace Enflow.Base
             _ruleB = ruleB;
         }
 
-        public bool IsSatisfied(T candidate) { return _ruleA.IsSatisfied(candidate) || _ruleB.IsSatisfied(candidate); }
+        public override bool IsSatisfied(T candidate) { return _ruleA.IsSatisfied(candidate) || _ruleB.IsSatisfied(candidate); }
     }
 
     /// <summary>Business rule that enforces a logical NOT of the input rule.</summary>
     /// <typeparam name="T"></typeparam>
-    public class NotBusinessRule<T> : IBusinessRule<T> where T : IModel<T> 
+    public class NotBusinessRule<T> : BusinessRule<T> where T : IModel<T> 
     {
         private readonly IBusinessRule<T> _rule;
         internal NotBusinessRule(IBusinessRule<T> rule) { _rule = rule; }
-        public bool IsSatisfied(T candidate) { return !_rule.IsSatisfied(candidate); }
+        public override bool IsSatisfied(T candidate) { return !_rule.IsSatisfied(candidate); }
     }
 
     /// <summary>Facilitates the fluent API for composing business rules from atomic constituents.</summary>

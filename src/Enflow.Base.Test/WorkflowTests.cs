@@ -34,7 +34,11 @@ namespace Enflow.Base.Test
             var preRule = Substitute.For<IBusinessRule<CounterModel>>();
             preRule.IsSatisfied(Arg.Any<CounterModel>()).Returns(false);
 
-            Assert.Throws(typeof(BusinessRuleException), () => new CounterIncrementWorkflow(preRule).Execute(model));
+            const string description = "This mock rule must be satisfied.";
+            preRule.Description = description;
+            
+            var message = Assert.Throws(typeof(BusinessRuleException), () => new CounterIncrementWorkflow(preRule).Execute(model)).Message;
+            Assert.Equal(description, message);
             Assert.Equal(0, model.Counter);
         }
     }
