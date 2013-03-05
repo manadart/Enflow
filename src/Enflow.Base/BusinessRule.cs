@@ -70,7 +70,7 @@ namespace Enflow.Base
     }
 
     /// <summary>Facilitates the fluent API for composing business rules from atomic constituents.</summary>
-    public static class Extensions
+    public static class BusinessRuleFluentExtensions
     {
         public static IBusinessRule<T> And<T>(this IBusinessRule<T> ruleA, IBusinessRule<T> ruleB) where T : IModel<T> 
         {
@@ -85,6 +85,12 @@ namespace Enflow.Base
         public static IBusinessRule<T> Not<T>(this IBusinessRule<T> rule) where T : IModel<T> 
         {
             return new NotBusinessRule<T>(rule);
+        }
+
+        public static IBusinessRule<T> Describe<T>(this IBusinessRule<T> rule, string description) where T : IModel<T>
+        {
+            rule.Description = description;
+            return rule;
         }
     }
 }
