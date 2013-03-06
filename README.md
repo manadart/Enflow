@@ -46,7 +46,6 @@ var salaryRaiseRule = new MaxSalaryRule()
 This is our new _Unit of Work_. Instantiate, passing in the rule to be validated. If the rule validation fails a _BusinessRuleException_ will be thrown with the rule description as the message.
 ```csharp
 // Example incorporating a repository pattern.
-
 public class ApplySalaryRaise : Workflow<Employee>
 {
     private readonly IRepository<Employee> _repository;
@@ -64,8 +63,7 @@ public class ApplySalaryRaise : Workflow<Employee>
     }
 }
 
-// Some example candidates.
-
+// Some example candidates for our workflow.
 var eligibleEmployee = new Employee
     {
         Name = "John Smith",
@@ -80,6 +78,7 @@ var ineligibleEmployee = new Employee
         Salary = 1000000
     };
 
+// Give the candidate employee a $5000 raise if they're in HR and earn less than $40k.
 var salaryRaiseWorflow = new ApplySalaryRaise(salaryRaiseRule, new EmployeeRepository());
 
 // Will be granted raise.
