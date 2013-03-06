@@ -7,6 +7,11 @@ namespace Enflow.Base.Test
         public override bool IsSatisfied(CounterModel candidate) { return candidate.Counter > 0; }
     }
 
+    public class NegativeCounterRule : BusinessRule<CounterModel>
+    {
+        public override bool IsSatisfied(CounterModel candidate) { return candidate.Counter < 0; }
+    }
+
     public class BusinessRuleTests
     {
         [Fact]
@@ -18,7 +23,7 @@ namespace Enflow.Base.Test
         }
 
         [Fact]
-        public void NotExtensionReturnsFalse()
+        public void NotExtensionEvaluesCorrectly()
         {
             var model = new CounterModel();
             model.Increment();
@@ -30,6 +35,22 @@ namespace Enflow.Base.Test
         {
             const string ruleDescription = "This rule enforces a counter > 0.";
             Assert.Equal(ruleDescription, new PositiveCounterRule().Describe(ruleDescription).Description);
+        }
+
+        [Fact]
+        public void OrExtensionEvaluatesCorrectly()
+        {
+            var model = new CounterModel();
+            model.Increment();
+            Assert.True(new PositiveCounterRule().Or(new NegativeCounterRule()).IsSatisfied(model));
+        }
+
+        [Fact]
+        public void AndExtensionEvaluatesCorrectly()
+        {
+            var model = new CounterModel();
+            model.Increment();
+            Assert.False(new PositiveCounterRule().And(new NegativeCounterRule()).IsSatisfied(model));
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Enflow.Base
             // Todo: implement post-condition rule validation.
         }
 
-        /// <summary>Workflow logic *Not* including business rule validation.</summary>
+        /// <summary>Workflow logic not including pre-condition rule validation.</summary>
         /// <param name="candidate"></param>
         protected abstract void ExecuteWorkflow(T candidate);
 
