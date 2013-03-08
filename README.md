@@ -137,19 +137,19 @@ var workflow = WorkflowFactory.Get<Employee>(Workflows.SalaryRaise);
 // When combined with an IoC container, the factory is just an indirection.
 // It allows resolution via the container without resorting to the Service Locator antipattern.
 public class AutofacWorkflowFactory : IWorkflowFactory
+{
+    private readonly IComponentContext _container;
+
+    public AutofacWorkflowFactory(IComponentContext container)
     {
-        private readonly IComponentContext _container;
-
-        public AutofacWorkflowFactory(IComponentContext container)
-        {
-            _container = container;
-        }
-
-        public IWorkflow<T> Get<T>(string name) where T : IModel<T>
-        {
-            _container.ResolveNamed<T>(name);
-        }
+        _container = container;
     }
+
+    public IWorkflow<T> Get<T>(string name) where T : IModel<T>
+    {
+        _container.ResolveNamed<T>(name);
+    }
+}
 
 public class MvcApplication : System.Web.HttpApplication
 {
