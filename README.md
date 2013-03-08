@@ -91,9 +91,9 @@ salaryRaiseWorflow.Execute(inelligibleEmployee);
 
 ### The Workflow Factory
 
-When using Enflow in small MVC applications it's acceptable to inject workflows directly into controllers. However if a controller depends on multiple workflows, consider the _WorkflowFactory_.
+When using Enflow in small MVC applications it is acceptable to inject workflows directly into controllers. However if a controller depends on multiple workflows, consider the _WorkflowFactory_.
 
-#### Stand Alone
+#### Stand Alone Example
 
 ```csharp
 // Not strictly necessary, but allows intellisense for named resolutions.
@@ -102,22 +102,54 @@ public static class Workflows
     public const string SalaryRaise = "Salary Raise";
 }
 
-// TBC.
-
-```
-
-#### Autofac
-
-```csharp
-// When combined with an IoC container, the factory really just abstracts away said container.
-public class MyWorkflowFactory : WorkflowFactory
+// Controllers requiring the factory will inherit from this.
+public class WorkflowController : Controller
 {
-    public MyWorkflowFactory(IComponentContext container)
+    protected readonly IWorkflowFactory WorkflowFactory;
+
+    public WorkflowController(IWorkflowFactory workflowFactory)
     {
-        Register(Workflows.SalaryRaise, () => container.ResolveNamed<IWorkflow<Employee>>(Workflows.SalaryRaise));
-        // Register other workflows.
+        WorkflowFactory = workflowFactory;
     }
 }
+
+public class WorkflowControllerFactory : DefaultControllerFactory
+{
+    protected override IController GetControllerInstance(RequestContext context, Type controllerType)
+    {
+        if (typeof(WorkflowController).IsAssignableFrom(controllerType))
+            return (WorkflowController)Activator.CreateInstance(controllerType, new object[] { new StandAloneWorkflowFactory() });
+
+        return base.GetControllerInstance(context, controllerType);
+    }
+}
+
+// In Application_Start()
+ControllerBuilder.Current.SetControllerFactory(new WorkflowControllerFactory());
+
+// Then when a workflow is required in a controller method...
+var workflow = WorkflowFactory.Get<Employee>(Workflows.SalaryRaise);
+```
+
+#### Autofac Example
+
+```csharp
+// When combined with an IoC container, the factory is just an indirection.
+// It allows resolution via the container without resorting to the Service Locator antipattern.
+public class AutofacWorkflowFactory : IWorkflowFactory
+    {
+        private readonly IComponentContext _container;
+
+        public AutofacWorkflowFactory(IComponentContext container)
+        {
+            _container = container;
+        }
+
+        public IWorkflow<T> Get<T>(string name) where T : IModel<T>
+        {
+            _container.ResolveNamed<T>(name);
+        }
+    }
 
 public class MvcApplication : System.Web.HttpApplication
 {
@@ -128,22 +160,26 @@ public class MvcApplication : System.Web.HttpApplication
         var container = builder.Build();
         DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
-        // Register model binders et al.
+        // Register model binders etc...
+        // Register repositories if you're using such a pattern.
 
-        var salaryRaiseRule = new MaxSalaryRule()
+        const string salaryAndDeptRule = "SalaryAndDeptRule";
+
+        builder.Register(c => new MaxSalaryRule()
             .And(new InHrDepartmentRule())
-            .Describe("Employee must be in the HR deparment and have a salary less than $40,000.");
+            .Describe("Employee must be in the HR deparment and have a salary less than $40,000."))
+                .Named<IBusinessRule<Employee>>(salaryAndDeptRule)
+                .InstancePerHttpRequest();
 
-        builder.Register(r => new ApplySalaryRaise(salaryRaiseRule, new EmployeeRepository()))
+        builder.Register(c => new ApplySalaryRaise(c.ResolveNamed<IBusinessRule<Employee>>(salaryAndDeptRule), c.Resolve<IRepository<Employee>>()))
             .Named<IWorkflow<Employee>>(Workflows.SalaryRaise)
             .InstancePerHttpRequest();
 
-        builder.Register(r => new MyWorkflowFactory(container)).As<IWorkflowFactory>();
+        builder.Register(r => new AutofacWorkflowFactory(container))
+            .As<IWorkflowFactory>();
+            .InstancePerHttpRequest();
 
-        // Other registrations.
+        // Other registrations...
     }
 }
-
-// TBC.
-
 ```
