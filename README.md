@@ -102,6 +102,20 @@ public static class Workflows
     public const string SalaryRaise = "Salary Raise";
 }
 
+public class StandAloneWorkflowFactory : WorkflowFactory
+{
+    public StandAloneWorkflowFactory()
+    {
+        Register(Workflows.SalaryRaise, () => 
+            new ApplySalaryRaise(new MaxSalaryRule()
+                .And(new InHrDepartmentRule())
+                .Describe("Employee must be in the HR deparment and have a salary less than $40,000."), 
+            new EmployeeRepository()));
+        
+        // Register other workflows...
+    }
+}
+
 // Controllers requiring the factory will inherit from this.
 public class WorkflowController : Controller
 {
