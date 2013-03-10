@@ -1,0 +1,1 @@
+nuget pack Enflow.Base\Enflow.Base.nuspec
