@@ -148,7 +148,7 @@ var workflow = WorkflowFactory.Get<Employee>(Workflows.SalaryRaise);
 #### Autofac Example
 
 ```csharp
-// When combined with an IoC container, the factory is just an indirection for MVC's inbuilt _Service Locator_.
+// When combined with an IoC container, the factory is just an indirection for MVC's inbuilt Service Locator.
 public class AutofacWorkflowFactory : IWorkflowFactory
 {
     public IWorkflow<T> Get<T>(string name) where T : IModel<T>
