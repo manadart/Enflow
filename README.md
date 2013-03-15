@@ -106,8 +106,8 @@ public class StandAloneWorkflowFactory : WorkflowFactory
 {
     public StandAloneWorkflowFactory()
     {
-        Register(Workflows.SalaryRaise, () => 
-            new ApplySalaryRaise(new MaxSalaryRule()
+        Register(Workflows.SalaryRaise, () => new ApplySalaryRaise(
+            new MaxSalaryRule()
                 .And(new InHrDepartmentRule())
                 .Describe("Employee must be in the HR deparment and have a salary less than $40,000."), 
             new EmployeeRepository()));
@@ -117,11 +117,11 @@ public class StandAloneWorkflowFactory : WorkflowFactory
 }
 
 // Controllers requiring the factory will inherit from this.
-public class WorkflowController : Controller
+public abstract class WorkflowController : Controller
 {
     protected readonly IWorkflowFactory WorkflowFactory;
 
-    public WorkflowController(IWorkflowFactory workflowFactory)
+    protected WorkflowController(IWorkflowFactory workflowFactory)
     {
         WorkflowFactory = workflowFactory;
     }
@@ -148,20 +148,12 @@ var workflow = WorkflowFactory.Get<Employee>(Workflows.SalaryRaise);
 #### Autofac Example
 
 ```csharp
-// When combined with an IoC container, the factory is just an indirection.
-// It allows resolution via the container without resorting to the Service Locator antipattern.
+// When combined with an IoC container, the factory is just an indirection for MVC's inbuilt _Service Locator_.
 public class AutofacWorkflowFactory : IWorkflowFactory
 {
-    private readonly IComponentContext _container;
-
-    public AutofacWorkflowFactory(IComponentContext container)
-    {
-        _container = container;
-    }
-
     public IWorkflow<T> Get<T>(string name) where T : IModel<T>
     {
-        _container.ResolveNamed<T>(name);
+        return ((AutofacDependencyResolver)DependencyResolver.Current).RequestLifetimeScope.ResolveNamed<IWorkflow<T>>(name);
     }
 }
 
@@ -171,11 +163,9 @@ public class MvcApplication : System.Web.HttpApplication
     {
         var builder = new ContainerBuilder();
         builder.RegisterControllers(typeof(MvcApplication).Assembly);
-        var container = builder.Build();
-        DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
         // Register model binders etc...
-        // Register repositories if you're using such a pattern.
+        // Register repositories...
 
         const string salaryAndDeptRule = "SalaryAndDeptRule";
 
@@ -185,15 +175,19 @@ public class MvcApplication : System.Web.HttpApplication
                 .Named<IBusinessRule<Employee>>(salaryAndDeptRule)
                 .InstancePerHttpRequest();
 
-        builder.Register(c => new ApplySalaryRaise(c.ResolveNamed<IBusinessRule<Employee>>(salaryAndDeptRule), c.Resolve<IRepository<Employee>>()))
-            .Named<IWorkflow<Employee>>(Workflows.SalaryRaise)
+        builder.Register(c => new ApplySalaryRaise(
+            c.ResolveNamed<IBusinessRule<Employee>>(salaryAndDeptRule), 
+            c.Resolve<IRepository<Employee>>()))
+                .Named<IWorkflow<Employee>>(Workflows.SalaryRaise)
+                .InstancePerHttpRequest();
+
+        builder.Register(c => new AutofacWorkflowFactory())
+            .As<IWorkflowFactory>()
             .InstancePerHttpRequest();
 
-        builder.Register(r => new AutofacWorkflowFactory(container))
-            .As<IWorkflowFactory>();
-            .InstancePerHttpRequest();
+        DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
 
-        // Other registrations...
+        // Other setup...
     }
 }
 ```
