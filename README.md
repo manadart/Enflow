@@ -132,7 +132,8 @@ public class WorkflowControllerFactory : DefaultControllerFactory
     protected override IController GetControllerInstance(RequestContext context, Type controllerType)
     {
         if (typeof(WorkflowController).IsAssignableFrom(controllerType))
-            return (WorkflowController)Activator.CreateInstance(controllerType, new object[] { new StandAloneWorkflowFactory() });
+            return (WorkflowController)Activator
+                .CreateInstance(controllerType, new object[] { new StandAloneWorkflowFactory() });
 
         return base.GetControllerInstance(context, controllerType);
     }
@@ -153,7 +154,8 @@ public class AutofacWorkflowFactory : IWorkflowFactory
 {
     public IWorkflow<T> Get<T>(string name) where T : IModel<T>
     {
-        return ((AutofacDependencyResolver)DependencyResolver.Current).RequestLifetimeScope.ResolveNamed<IWorkflow<T>>(name);
+        return ((AutofacDependencyResolver)DependencyResolver.Current)
+            .RequestLifetimeScope.ResolveNamed<IWorkflow<T>>(name);
     }
 }
 
