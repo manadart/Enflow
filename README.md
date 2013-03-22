@@ -3,6 +3,8 @@ Enflow
 
 Enflow is a simple library for workflows and business rules. It is an ideal replacement for the _Unit of Work_ pattern popular in MVC applications, particularly where model state validation must accompany units of work.
 
+Usage is not limited to MVC. Enflow is a [Portable Class Library](http://msdn.microsoft.com/en-us/library/gg597391.aspx) (PCL) and works across multiple platforms.
+
 ### Models
 
 Just mark your DTO/POCO models with the Enflow model interface.
@@ -68,7 +70,7 @@ var eligibleEmployee = new Employee
     {
         Name = "John Smith",
         Department = "Human Resources",
-        Salary = 39000
+        Salary = 10000;
     };
 
 var ineligibleEmployee = new Employee
@@ -85,7 +87,13 @@ var salaryRaiseWorflow = new ApplySalaryRaise(salaryRaiseRule, new EmployeeRepos
 salaryRaiseWorflow.Execute(elligibleEmployee); 
 
 // Will throw a BusinessRuleException.
-salaryRaiseWorflow.Execute(inelligibleEmployee); 
+salaryRaiseWorflow.Execute(inelligibleEmployee);
+
+// It is also possible to chain multiple workflows using the fluent API.
+// This would apply two pay increases as long as the salary remained under $40k.
+elligibleEmployee
+    .Flow(salaryRaiseWorflow)
+    .Flow(salaryRaiseWorflow);
 
 ```
 

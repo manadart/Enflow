@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessRuleTests.cs" />
+    <Compile Include="ModelTests.cs" />
     <Compile Include="TestingImplementations.cs" />
     <Compile Include="WorkflowFactoryTests.cs" />
     <Compile Include="WorkflowTests.cs" />
