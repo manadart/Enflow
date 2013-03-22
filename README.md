@@ -84,14 +84,14 @@ var ineligibleEmployee = new Employee
 var salaryRaiseWorflow = new ApplySalaryRaise(salaryRaiseRule, new EmployeeRepository());
 
 // Will be granted the salary raise.
-salaryRaiseWorflow.Execute(elligibleEmployee); 
+salaryRaiseWorflow.Execute(eligibleEmployee); 
 
 // Will throw a BusinessRuleException.
-salaryRaiseWorflow.Execute(inelligibleEmployee);
+salaryRaiseWorflow.Execute(ineligibleEmployee);
 
 // It is also possible to chain multiple workflows using the fluent API.
 // This would apply two pay increases as long as the salary remained under $40k.
-elligibleEmployee
+eligibleEmployee
     .Flow(salaryRaiseWorflow)
     .Flow(salaryRaiseWorflow);
 
@@ -208,7 +208,7 @@ Unless otherwise specified, all content in this repository is licensed as follow
 
 The MIT License (MIT)
 
-Copyright (c) 2013 Joseph Phillips
+__Copyright (c) 2013 Joseph Phillips__
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
