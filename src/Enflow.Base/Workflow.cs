@@ -19,7 +19,7 @@ namespace Enflow.Base
         /// <param name="candidate"></param>
         public virtual void Execute(T candidate)
         {
-            ValidateBusinessRule(candidate, _preStateRule); 
+            ValidateStateRule(candidate, _preStateRule); 
             ExecuteWorkflow(candidate);
             // Todo: implement post-condition rule validation.
         }
@@ -28,7 +28,7 @@ namespace Enflow.Base
         /// <param name="candidate"></param>
         protected abstract void ExecuteWorkflow(T candidate);
 
-        private static void ValidateBusinessRule(T candidate, IStateRule<T> rule)
+        private static void ValidateStateRule(T candidate, IStateRule<T> rule)
         {
             if (rule == null) return;
             if (!rule.IsSatisfied(candidate)) throw new BusinessRuleException(rule.Description);
