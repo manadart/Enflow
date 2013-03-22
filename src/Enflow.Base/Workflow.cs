@@ -15,7 +15,7 @@ namespace Enflow.Base
         protected Workflow() { }
         protected Workflow(IStateRule<T> preStateRule) { _preStateRule = preStateRule; }
 
-        /// <summary>Validates the pre-condition business rule and executes the workflow logic.</summary>
+        /// <summary>Validates the pre-condition state rule and executes the workflow logic.</summary>
         /// <param name="candidate"></param>
         public virtual void Execute(T candidate)
         {
@@ -31,7 +31,7 @@ namespace Enflow.Base
         private static void ValidateStateRule(T candidate, IStateRule<T> rule)
         {
             if (rule == null) return;
-            if (!rule.IsSatisfied(candidate)) throw new BusinessRuleException(rule.Description);
+            if (!rule.IsSatisfied(candidate)) throw new StateRuleException(rule.Description);
         }
     }
 }

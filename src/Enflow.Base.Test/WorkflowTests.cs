@@ -37,7 +37,7 @@ namespace Enflow.Base.Test
             const string description = "This mock rule must be satisfied.";
             preRule.Description = description;
             
-            var message = Assert.Throws(typeof(BusinessRuleException), () => new CounterIncrementWorkflow(preRule).Execute(model)).Message;
+            var message = Assert.Throws(typeof(StateRuleException), () => new CounterIncrementWorkflow(preRule).Execute(model)).Message;
             Assert.Equal(description, message);
             Assert.Equal(0, model.Counter);
         }

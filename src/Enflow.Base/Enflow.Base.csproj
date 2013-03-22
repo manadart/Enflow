@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="StateRule.cs" />
-    <Compile Include="Exceptions\BusinessRuleException.cs" />
+    <Compile Include="Exceptions\StateRuleException.cs" />
     <Compile Include="Exceptions\WorkflowException.cs" />
     <Compile Include="Exceptions\WorkflowFactoryException.cs" />
     <Compile Include="Model.cs" />
