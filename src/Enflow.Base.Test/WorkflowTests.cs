@@ -18,7 +18,7 @@ namespace Enflow.Base.Test
         {
             var model = new CounterModel();
 
-            var preRule = Substitute.For<IBusinessRule<CounterModel>>();
+            var preRule = Substitute.For<IStateRule<CounterModel>>();
             preRule.IsSatisfied(Arg.Any<CounterModel>()).Returns(true);
 
             new CounterIncrementWorkflow(preRule).Execute(model);
@@ -31,7 +31,7 @@ namespace Enflow.Base.Test
         {
             var model = new CounterModel();
 
-            var preRule = Substitute.For<IBusinessRule<CounterModel>>();
+            var preRule = Substitute.For<IStateRule<CounterModel>>();
             preRule.IsSatisfied(Arg.Any<CounterModel>()).Returns(false);
 
             const string description = "This mock rule must be satisfied.";

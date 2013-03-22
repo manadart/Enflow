@@ -2,12 +2,12 @@
 
 namespace Enflow.Base.Test
 {
-    public class PositiveCounterRule : BusinessRule<CounterModel>
+    public class PositiveCounterRule : StateRule<CounterModel>
     {
         public override bool IsSatisfied(CounterModel candidate) { return candidate.Counter > 0; }
     }
 
-    public class NegativeCounterRule : BusinessRule<CounterModel>
+    public class NegativeCounterRule : StateRule<CounterModel>
     {
         public override bool IsSatisfied(CounterModel candidate) { return candidate.Counter < 0; }
     }

@@ -10,16 +10,16 @@ namespace Enflow.Base
 
     public abstract class Workflow<T> : IWorkflow<T> where T : IModel<T>
     {
-        private readonly IBusinessRule<T> _preBusinessRule;
+        private readonly IStateRule<T> _preStateRule;
 
         protected Workflow() { }
-        protected Workflow(IBusinessRule<T> preBusinessRule) { _preBusinessRule = preBusinessRule; }
+        protected Workflow(IStateRule<T> preStateRule) { _preStateRule = preStateRule; }
 
         /// <summary>Validates the pre-condition business rule and executes the workflow logic.</summary>
         /// <param name="candidate"></param>
         public virtual void Execute(T candidate)
         {
-            ValidateBusinessRule(candidate, _preBusinessRule); 
+            ValidateBusinessRule(candidate, _preStateRule); 
             ExecuteWorkflow(candidate);
             // Todo: implement post-condition rule validation.
         }
@@ -28,7 +28,7 @@ namespace Enflow.Base
         /// <param name="candidate"></param>
         protected abstract void ExecuteWorkflow(T candidate);
 
-        private static void ValidateBusinessRule(T candidate, IBusinessRule<T> rule)
+        private static void ValidateBusinessRule(T candidate, IStateRule<T> rule)
         {
             if (rule == null) return;
             if (!rule.IsSatisfied(candidate)) throw new BusinessRuleException(rule.Description);

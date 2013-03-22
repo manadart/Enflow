@@ -15,11 +15,11 @@ namespace Enflow.Base.Test
     public class CounterIncrementWorkflow : Workflow<CounterModel>
     {
         public CounterIncrementWorkflow() { }
-        public CounterIncrementWorkflow(IBusinessRule<CounterModel> preRule) : base(preRule) { }
+        public CounterIncrementWorkflow(IStateRule<CounterModel> preRule) : base(preRule) { }
         protected override void ExecuteWorkflow(CounterModel candidate) { candidate.Increment(); }
     }
 
-    public class LessThanTen : BusinessRule<CounterModel>
+    public class LessThanTen : StateRule<CounterModel>
     {
         public override bool IsSatisfied(CounterModel candidate)
         {
