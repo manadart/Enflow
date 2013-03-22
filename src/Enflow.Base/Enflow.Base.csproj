@@ -36,7 +36,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BusinessRule.cs" />
+    <Compile Include="StateRule.cs" />
     <Compile Include="Exceptions\BusinessRuleException.cs" />
     <Compile Include="Exceptions\WorkflowException.cs" />
     <Compile Include="Exceptions\WorkflowFactoryException.cs" />
