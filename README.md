@@ -5,6 +5,8 @@ Enflow is a simple library for workflows and state/business rules. It is an idea
 
 Usage is not limited to MVC. Enflow is a [Portable Class Library](http://msdn.microsoft.com/en-us/library/gg597391.aspx) (PCL) and works across multiple platforms. For more information, including usage in _Mono for Android_ and _MonoTouch_, have a read of [this blog post](http://slodge.blogspot.sk/2012/12/cross-platform-winrt-monodroid.html) by Stuart Lodge ([@slodge](https://twitter.com/slodge)).
 
+Enflow is available via [NuGet](https://nuget.org/packages/Enflow/).
+
 ### Models
 
 Just mark your DTO/POCO models with the Enflow model interface.
@@ -52,8 +54,7 @@ public class ApplySalaryRaise : Workflow<Employee>
 {
     private readonly IRepository<Employee> _repository;
 
-    public ApplySalaryRaise(IStateRule<Employee> rule, IRepository<Employee> repository)
-        : base(rule)
+    public ApplySalaryRaise(IStateRule<Employee> rule, IRepository<Employee> repository) : base(rule)
     {
         _repository = repository;
     }
