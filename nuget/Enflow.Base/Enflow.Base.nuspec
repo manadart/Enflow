@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Enflow</id>
-    <version>0.1</version>
+    <version>0.1.1</version>
     <authors>Joseph Phillips</authors>
     <owners>Joseph Phillips</owners>
-    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <licenseUrl>https://github.com/SpiritMachine/Enflow/blob/master/License.txt</licenseUrl>
     <projectUrl>https://github.com/SpiritMachine/Enflow</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A Simple Library for Workflows and Business Rules</description>
-    <tags>Workflow BusinessRules Specification UnitOfWork</tags>
+    <tags>Workflow BusinessRules Specification UnitOfWork PCL</tags>
   </metadata>
   <files>    
     <file src="lib\**\*.*" target="lib" />
