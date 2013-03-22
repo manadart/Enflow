@@ -21,8 +21,7 @@ public class Employee : IModel<Employee>
 
 Create rules based on your models and use the fluent API to create composite rules from atomic constituents.
 ```csharp
-public class MaxSalaryRule : 
-StateRule<Employee>
+public class MaxSalaryRule : StateRule<Employee>
 {
     public override bool IsSatisfied(Employee candidate)
     {
@@ -30,8 +29,7 @@ StateRule<Employee>
     }
 }
 
-public class InHrDepartmentRule : 
-StateRule<Employee>
+public class InHrDepartmentRule : StateRule<Employee>
 {
     public override bool IsSatisfied(Employee candidate)
     {
@@ -54,8 +52,7 @@ public class ApplySalaryRaise : Workflow<Employee>
 {
     private readonly IRepository<Employee> _repository;
 
-    public ApplySalaryRaise(I
-StateRule<Employee> rule, IRepository<Employee> repository)
+    public ApplySalaryRaise(IStateRule<Employee> rule, IRepository<Employee> repository)
         : base(rule)
     {
         _repository = repository;
