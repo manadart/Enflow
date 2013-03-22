@@ -1,7 +1,7 @@
 Enflow
 ======
 
-Enflow is a simple library for workflows and business rules. It is an ideal replacement for the _Unit of Work_ pattern popular in MVC applications, particularly where model state validation must accompany units of work.
+Enflow is a simple library for workflows and state/business rules. It is an ideal replacement for the _Unit of Work_ pattern popular in MVC applications, particularly where model state validation must accompany units of work.
 
 Usage is not limited to MVC. Enflow is a [Portable Class Library](http://msdn.microsoft.com/en-us/library/gg597391.aspx) (PCL) and works across multiple platforms. For more information, including usage in _Mono for Android_ and _MonoTouch_, have a read of [this blog post](http://slodge.blogspot.sk/2012/12/cross-platform-winrt-monodroid.html) by Stuart Lodge ([@slodge](https://twitter.com/slodge)).
 
@@ -17,11 +17,12 @@ public class Employee : IModel<Employee>
 }
 ```
 
-### Business Rules
+### State Rules
 
-Create business rules based on your models and use the fluent API to create composite rules from atomic constituents.
+Create rules based on your models and use the fluent API to create composite rules from atomic constituents.
 ```csharp
-public class MaxSalaryRule : BusinessRule<Employee>
+public class MaxSalaryRule : 
+StateRule<Employee>
 {
     public override bool IsSatisfied(Employee candidate)
     {
@@ -29,7 +30,8 @@ public class MaxSalaryRule : BusinessRule<Employee>
     }
 }
 
-public class InHrDepartmentRule : BusinessRule<Employee>
+public class InHrDepartmentRule : 
+StateRule<Employee>
 {
     public override bool IsSatisfied(Employee candidate)
     {
@@ -45,14 +47,15 @@ var salaryRaiseRule = new MaxSalaryRule()
 
 ### Workflows
 
-This is our new _Unit of Work_. Instantiate, passing in the rule to be validated. If the rule validation fails, a _BusinessRuleException_ will be thrown with the rule description as the message.
+This is our new _Unit of Work_. Instantiate, passing in the rule to be validated. If the rule validation fails, a _StateRuleException_ will be thrown with the rule description as the message.
 ```csharp
 // Example incorporating a repository pattern.
 public class ApplySalaryRaise : Workflow<Employee>
 {
     private readonly IRepository<Employee> _repository;
 
-    public ApplySalaryRaise(IBusinessRule<Employee> rule, IRepository<Employee> repository)
+    public ApplySalaryRaise(I
+StateRule<Employee> rule, IRepository<Employee> repository)
         : base(rule)
     {
         _repository = repository;
@@ -86,7 +89,7 @@ var salaryRaiseWorflow = new ApplySalaryRaise(salaryRaiseRule, new EmployeeRepos
 // Will be granted the salary raise.
 salaryRaiseWorflow.Execute(eligibleEmployee); 
 
-// Will throw a BusinessRuleException.
+// Will throw a StateRuleException.
 salaryRaiseWorflow.Execute(ineligibleEmployee);
 
 // It is also possible to chain multiple workflows using the fluent API.
@@ -182,11 +185,11 @@ public class MvcApplication : System.Web.HttpApplication
         builder.Register(c => new MaxSalaryRule()
             .And(new InHrDepartmentRule())
             .Describe("Employee must be in the HR deparment and have a salary less than $40,000."))
-                .Named<IBusinessRule<Employee>>(salaryAndDeptRule)
+                .Named<IStateRule<Employee>>(salaryAndDeptRule)
                 .InstancePerHttpRequest();
 
         builder.Register(c => new ApplySalaryRaise(
-            c.ResolveNamed<IBusinessRule<Employee>>(salaryAndDeptRule), 
+            c.ResolveNamed<IStateRule<Employee>>(salaryAndDeptRule), 
             c.Resolve<IRepository<Employee>>()))
                 .Named<IWorkflow<Employee>>(Workflows.SalaryRaise)
                 .InstancePerHttpRequest();
