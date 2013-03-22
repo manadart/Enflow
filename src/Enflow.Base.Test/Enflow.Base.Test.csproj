@@ -55,15 +55,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Enflow.Base\Enflow.Base.csproj">
-      <Project>{8958133C-9930-44B4-9B15-54AA019F4945}</Project>
-      <Name>Enflow.Base</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Enflow.Base\Enflow.Base.csproj">
+      <Project>{297DE7BE-45CE-4C54-86EC-E999CBC5A7E9}</Project>
+      <Name>Enflow.Base</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
