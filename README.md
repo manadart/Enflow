@@ -3,7 +3,7 @@ Enflow
 
 Enflow is a simple library for workflows and business rules. It is an ideal replacement for the _Unit of Work_ pattern popular in MVC applications, particularly where model state validation must accompany units of work.
 
-Usage is not limited to MVC. Enflow is a [Portable Class Library](http://msdn.microsoft.com/en-us/library/gg597391.aspx) (PCL) and works across multiple platforms. For more information, including usage in Mono for Android and MonoTouch, have a read of [this blog post](http://slodge.blogspot.sk/2012/12/cross-platform-winrt-monodroid.html) by Stuart Lodge (@slodge).
+Usage is not limited to MVC. Enflow is a [Portable Class Library](http://msdn.microsoft.com/en-us/library/gg597391.aspx) (PCL) and works across multiple platforms. For more information, including usage in _Mono for Android_ and _MonoTouch_, have a read of [this blog post](http://slodge.blogspot.sk/2012/12/cross-platform-winrt-monodroid.html) by Stuart Lodge ([@slodge](https://twitter.com/slodge)).
 
 ### Models
 
