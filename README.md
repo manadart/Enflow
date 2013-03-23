@@ -43,6 +43,9 @@ public class InHrDepartmentRule : StateRule<Employee>
 var salaryRaiseRule = new MaxSalaryRule()
     .And(new InHrDepartmentRule())
     .Describe("Employee must be in the HR deparment and have a salary less than $40,000.");
+
+// Candidates can then be checked against a rule to see if they satisfy it.
+var isEligible = salaryRaiseRule.IsSatified(someEmployee);
 ```
 
 ### Workflows
