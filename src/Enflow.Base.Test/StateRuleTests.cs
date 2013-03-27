@@ -62,7 +62,7 @@ namespace Enflow.Base.Test
             var invalidCandidate = new CounterModel { Counter = -1 };
 
             var candidates = new List<CounterModel> { validCandidate, invalidCandidate }.AsQueryable();
-            var filtered = candidates.Where(new PositiveCounterRule().AsExpression()).ToList();
+            var filtered = candidates.Where(new PositiveCounterRule().Predicate).ToList();
 
             Assert.Equal(1, filtered.Count);
             Assert.Equal(validCandidate.Id, filtered[0].Id);

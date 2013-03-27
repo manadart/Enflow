@@ -19,16 +19,18 @@ namespace Enflow.Base
 {
     /// <summary>Interface for Enflow business rules. Can only be applied to core types.</summary>
     /// <typeparam name="T"></typeparam>
-    public interface IStateRule<in T> where T : IModel<T>
+    public interface IStateRule<T> where T : IModel<T>
     {
         string Description { get; set; }
         bool IsSatisfied(T candidate);
+        Expression<Func<T, bool>> Predicate { get; }
     }
 
     public abstract class StateRule<T> : IStateRule<T> where T : IModel<T>
     {
         public string Description { get; set; }
         public abstract bool IsSatisfied(T candidate);
+        public Expression<Func<T, bool>> Predicate { get { return c => IsSatisfied(c); } }
     }
 
     /// <summary>Composite business rule where both input rules must be satisfied.</summary>
@@ -73,7 +75,7 @@ namespace Enflow.Base
     }
 
     /// <summary>Facilitates the fluent API for composing business rules from atomic constituents.</summary>
-    public static class StateRuleExtensions
+    public static class StateRuleFluentExtensions
     {
         public static IStateRule<T> And<T>(this IStateRule<T> ruleA, IStateRule<T> ruleB) where T : IModel<T> 
         {
@@ -94,15 +96,6 @@ namespace Enflow.Base
         {
             rule.Description = description;
             return rule;
-        }
-
-        /// <summary>Returns the rule check as an Expression, allowing use in Linq-to-Entity queries.</summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="rule"></param>
-        /// <returns></returns>
-        public static Expression<Func<T, bool>> AsExpression<T>(this IStateRule<T> rule) where T : IModel<T>
-        {
-            return c => rule.IsSatisfied(c);
         }
     }
 }

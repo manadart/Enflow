@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Enflow</id>
-    <version>0.2</version>
+    <version>0.2.2</version>
     <authors>Joseph Phillips</authors>
     <owners>Joseph Phillips</owners>
     <licenseUrl>https://github.com/SpiritMachine/Enflow/blob/master/License.txt</licenseUrl>
