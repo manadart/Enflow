@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Xunit;
 
 namespace Enflow.Base.Test
 {
@@ -12,7 +14,7 @@ namespace Enflow.Base.Test
         public override bool IsSatisfied(CounterModel candidate) { return candidate.Counter < 0; }
     }
 
-    public class BusinessRuleTests
+    public class StateRuleTests
     {
         [Fact]
         public void SimpleSatisfiedRuleReturnsTrue()
@@ -51,6 +53,19 @@ namespace Enflow.Base.Test
             var model = new CounterModel();
             model.Increment();
             Assert.False(new PositiveCounterRule().And(new NegativeCounterRule()).IsSatisfied(model));
+        }
+
+        [Fact]
+        public void AsExpressionExtensionFiltersCorrectly()
+        {
+            var validCandidate = new CounterModel { Counter = 1 };
+            var invalidCandidate = new CounterModel { Counter = -1 };
+
+            var candidates = new List<CounterModel> { validCandidate, invalidCandidate }.AsQueryable();
+            var filtered = candidates.Where(new PositiveCounterRule().AsExpression()).ToList();
+
+            Assert.Equal(1, filtered.Count);
+            Assert.Equal(validCandidate.Id, filtered[0].Id);
         }
     }
 }

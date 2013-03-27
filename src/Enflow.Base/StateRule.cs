@@ -12,6 +12,9 @@
  *  http://martinfowler.com/apsupp/spec.pdf
  */
 
+using System;
+using System.Linq.Expressions;
+
 namespace Enflow.Base
 {
     /// <summary>Interface for Enflow business rules. Can only be applied to core types.</summary>
@@ -19,7 +22,7 @@ namespace Enflow.Base
     public interface IStateRule<in T> where T : IModel<T>
     {
         string Description { get; set; }
-        bool IsSatisfied(T candidate);       
+        bool IsSatisfied(T candidate);
     }
 
     public abstract class StateRule<T> : IStateRule<T> where T : IModel<T>
@@ -70,7 +73,7 @@ namespace Enflow.Base
     }
 
     /// <summary>Facilitates the fluent API for composing business rules from atomic constituents.</summary>
-    public static class BusinessRuleFluentExtensions
+    public static class StateRuleExtensions
     {
         public static IStateRule<T> And<T>(this IStateRule<T> ruleA, IStateRule<T> ruleB) where T : IModel<T> 
         {
@@ -91,6 +94,15 @@ namespace Enflow.Base
         {
             rule.Description = description;
             return rule;
+        }
+
+        /// <summary>Returns the rule check as an Expression, allowing use in Linq-to-Entity queries.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="rule"></param>
+        /// <returns></returns>
+        public static Expression<Func<T, bool>> AsExpression<T>(this IStateRule<T> rule) where T : IModel<T>
+        {
+            return c => rule.IsSatisfied(c);
         }
     }
 }
