@@ -48,8 +48,10 @@ var salaryRaiseRule = new MaxSalaryRule()
 var isEligible = salaryRaiseRule.IsSatified(someEmployee);
 
 // A rule can also be used to filter an IQueryable via the Predicate property.
-// This can be used to apply a where clause in Linq-to-Entity.
-var eligibleEmployees = db.Employees.Where(salaryRaiseRule.Predicate.Compile());
+var eligibleEmployees = Employees.Where(salaryRaiseRule.Predicate);
+
+// Just compile the predicate to get a Func<T, bool> for filtering IEnumerable.
+var eligibleEmployees = Employees.Where(salaryRaiseRule.Predicate.Compile());
 ```
 
 ### Workflows
