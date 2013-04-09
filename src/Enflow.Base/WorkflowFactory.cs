@@ -14,7 +14,7 @@ namespace Enflow.Base
 
         protected void Register<T>(string name, Func<IWorkflow<T>> resolver) where T : IModel<T>
         {
-            Func<object> wrapper = () => resolver(); // Required for support of some PCL targets.
+            Func<object> wrapper = resolver; // Required for support of some PCL targets.
             _registrations.Add(name, wrapper);
         }
 

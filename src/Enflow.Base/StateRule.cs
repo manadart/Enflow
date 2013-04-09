@@ -1,5 +1,5 @@
 ﻿/*
- * The basis for this code is the Wikipedia page on the Specification Pattern: 
+ * The inspiration for this code is the Wikipedia page on the Specification Pattern: 
  *  http://en.wikipedia.org/wiki/Specification_pattern
  * 
  * It is shared under the Creative Commons Attribution-ShareAlike License.
@@ -21,16 +21,28 @@ namespace Enflow.Base
     /// <typeparam name="T"></typeparam>
     public interface IStateRule<T> where T : IModel<T>
     {
-        string Description { get; set; }
-        bool IsSatisfied(T candidate);
         Expression<Func<T, bool>> Predicate { get; }
+        string Description { get; set; }
+        bool IsSatisfied(T candidate);    
     }
 
     public abstract class StateRule<T> : IStateRule<T> where T : IModel<T>
     {
+        public abstract Expression<Func<T, bool>> Predicate { get; }
         public string Description { get; set; }
-        public abstract bool IsSatisfied(T candidate);
-        public Expression<Func<T, bool>> Predicate { get { return c => IsSatisfied(c); } }
+        public bool IsSatisfied(T candidate) { return Predicate.Compile().Invoke(candidate); }   
+      
+        /// <summary>
+        /// Ensures that parameter expressions refer to the same instance across all expressions that are combined to form the input expression.
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        protected Expression<Func<T, bool>> ReplaceParameter (Expression expression)
+        {
+            var parameterExpression = Expression.Parameter(typeof(T));
+            var body = new ParameterReplacer(parameterExpression).Visit(expression);
+            return Expression.Lambda<Func<T, bool>>(body, parameterExpression);
+        }
     }
 
     /// <summary>Composite business rule where both input rules must be satisfied.</summary>
@@ -46,7 +58,10 @@ namespace Enflow.Base
             _ruleB = ruleB;
         }
 
-        public override bool IsSatisfied(T candidate) { return _ruleA.IsSatisfied(candidate) && _ruleB.IsSatisfied(candidate); }
+        public override Expression<Func<T, bool>> Predicate
+        {
+            get { return ReplaceParameter(Expression.And(_ruleA.Predicate.Body, _ruleB.Predicate.Body)); }
+        }
     }
 
     /// <summary>Composite business rule where at least one of the input rules must be satisfied.</summary>
@@ -62,7 +77,10 @@ namespace Enflow.Base
             _ruleB = ruleB;
         }
 
-        public override bool IsSatisfied(T candidate) { return _ruleA.IsSatisfied(candidate) || _ruleB.IsSatisfied(candidate); }
+        public override Expression<Func<T, bool>> Predicate
+        {
+            get { return ReplaceParameter(Expression.Or(_ruleA.Predicate.Body, _ruleB.Predicate.Body)); }
+        }
     }
 
     /// <summary>Business rule that enforces a logical NOT of the input rule.</summary>
@@ -71,7 +89,11 @@ namespace Enflow.Base
     {
         private readonly IStateRule<T> _rule;
         internal NotStateRule(IStateRule<T> rule) { _rule = rule; }
-        public override bool IsSatisfied(T candidate) { return !_rule.IsSatisfied(candidate); }
+        
+        public override Expression<Func<T, bool>> Predicate
+        {
+            get { return ReplaceParameter(Expression.Not(_rule.Predicate.Body)); }
+        }
     }
 
     /// <summary>Facilitates the fluent API for composing business rules from atomic constituents.</summary>
