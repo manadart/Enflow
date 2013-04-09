@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Enflow.Base.pcl")]
-[assembly: AssemblyDescription("A simple library for workflows and business rules.")]
+[assembly: AssemblyDescription("A simple library for workflows and state rules.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Joseph Phillips")]
 [assembly: AssemblyProduct("Enflow.Base.pcl")]

@@ -17,7 +17,7 @@ using System.Linq.Expressions;
 
 namespace Enflow.Base
 {
-    /// <summary>Interface for Enflow business rules. Can only be applied to core types.</summary>
+    /// <summary>Interface for Enflow state rules. Can only be applied to core types.</summary>
     /// <typeparam name="T"></typeparam>
     public interface IStateRule<T> where T : IModel<T>
     {
@@ -45,7 +45,7 @@ namespace Enflow.Base
         }
     }
 
-    /// <summary>Composite business rule where both input rules must be satisfied.</summary>
+    /// <summary>Composite state rule where both input rules must be satisfied.</summary>
     /// <typeparam name="T"></typeparam>
     public class AndStateRule<T> : StateRule<T> where T : IModel<T> 
     {
@@ -64,7 +64,7 @@ namespace Enflow.Base
         }
     }
 
-    /// <summary>Composite business rule where at least one of the input rules must be satisfied.</summary>
+    /// <summary>Composite state rule where at least one of the input rules must be satisfied.</summary>
     /// <typeparam name="T"></typeparam>
     public class OrStateRule<T> : StateRule<T> where T : IModel<T> 
     {
@@ -83,7 +83,7 @@ namespace Enflow.Base
         }
     }
 
-    /// <summary>Business rule that enforces a logical NOT of the input rule.</summary>
+    /// <summary>State rule that enforces a logical NOT of the input rule.</summary>
     /// <typeparam name="T"></typeparam>
     public class NotStateRule<T> : StateRule<T> where T : IModel<T> 
     {
@@ -96,7 +96,7 @@ namespace Enflow.Base
         }
     }
 
-    /// <summary>Facilitates the fluent API for composing business rules from atomic constituents.</summary>
+    /// <summary>Facilitates the fluent API for composing state rules from atomic constituents.</summary>
     public static class StateRuleFluentExtensions
     {
         public static IStateRule<T> And<T>(this IStateRule<T> ruleA, IStateRule<T> ruleB) where T : IModel<T> 
