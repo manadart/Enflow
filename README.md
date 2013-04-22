@@ -25,17 +25,17 @@ Create rules based on your models and use the fluent API to create composite rul
 ```csharp
 public class MaxSalaryRule : StateRule<Employee>
 {
-    public override bool IsSatisfied(Employee candidate)
+    public override Expression<Func<Employee, bool>>
     {
-        return candidate.Salary < 40000;
+        get { return candidate => candidate.Salary < 40000; }
     }
 }
 
 public class InHrDepartmentRule : StateRule<Employee>
 {
-    public override bool IsSatisfied(Employee candidate)
+    public override Expression<Func<Employee, bool>>
     {
-        return candidate.Department == "Human Resources";
+        get { return candidate => candidate.Department == "Human Resources"; }
     }
 }
 
@@ -48,6 +48,7 @@ var salaryRaiseRule = new MaxSalaryRule()
 var isEligible = salaryRaiseRule.IsSatified(someEmployee);
 
 // A rule can also be used to filter an IQueryable via the Predicate property.
+// Depending on the actual expression, this will also work with Linq-to-Entity.
 var eligibleEmployees = Employees.Where(salaryRaiseRule.Predicate);
 
 // Just compile the predicate to get a Func<T, bool> for filtering IEnumerable.
