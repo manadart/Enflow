@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Enflow</id>
-    <version>0.2.2.1</version>
+    <version>0.3</version>
     <authors>Joseph Phillips</authors>
     <owners>Joseph Phillips</owners>
     <licenseUrl>https://github.com/SpiritMachine/Enflow/blob/master/License.txt</licenseUrl>
     <projectUrl>https://github.com/SpiritMachine/Enflow</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>A Simple Library for Workflows and State Rules</description>
-    <tags>Workflow BusinessRules State Specification UnitOfWork PCL</tags>
+    <description>Enflow is a simple library for workflows and state rules. It aims to provide a simple, cross-platform unit-of-work facility. The state rule definitions can also be used to filter IQueryable and IEnumerable, including Linq-to-Entity.</description>
+    <tags>Workflow BusinessRules State Specification UnitOfWork PCL LINQ</tags>
   </metadata>
   <files>    
     <file src="lib\**\*.*" target="lib" />
