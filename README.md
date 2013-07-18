@@ -160,7 +160,7 @@ var moveToBoardWorkflow = new MoveHrPersonToNewDepartment(new InHrDepartmentRule
                 Name = "Board of Directors", 
                 EmployeeCount = 5,
                 Building = "Downtown Office"
-            };
+            }
     };
 
 var moveDeptOfficeWorkflow = new MoveToTheNewOffice();
