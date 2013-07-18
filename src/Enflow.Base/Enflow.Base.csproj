@@ -38,7 +38,6 @@
     <Compile Include="StateRule.cs" />
     <Compile Include="Exceptions\StateRuleException.cs" />
     <Compile Include="Exceptions\WorkflowException.cs" />
-    <Compile Include="Exceptions\WorkflowFactoryException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Workflow.cs" />
   </ItemGroup>
