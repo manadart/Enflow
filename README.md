@@ -136,6 +136,7 @@ public class MoveHrPersonToNewDepartment : Workflow<Employee, Department>
     protected override Department ExecuteWorkflow(Employee candidate)
     {
         candidate.Department = Destination.Name;
+        Destination.EmployeeCount++;
         return Destination;
     }
 }
