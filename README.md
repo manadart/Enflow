@@ -8,7 +8,7 @@ Enflow is available via [NuGet](https://nuget.org/packages/Enflow/).
 
 ### Models
 
-Note: It is no longer necessary to mark models with the ```IModel<T>``` interface. This has been removed - Enflow is now much more versatile.
+Note: It is no longer necessary to mark types with the ```IModel<T>``` interface. This has been removed - Enflow is now much more versatile.
 
 ### State Rules
 
@@ -117,7 +117,7 @@ var canThisPersonGetMore = eligibleEmployee
     .Satisfies(salaryRaiseRule);
 ```
 
-An ```IWorkflow<T>``` returns _T_ from its call to _Execute_. Using ```IWorkflow<T, U>``` we can chain together sequences of actions that pass different types between them.
+An ```IWorkflow<T>``` returns _T_ from its call to _Execute_. ```IWorkflow<T, U>``` allows chaining together sequences of workflows that pass different types between them. This means complex workflows can be expressed as compositions of smaller ones, increasing modularity, re-use and testability.
 
 ```csharp
 public class Department
