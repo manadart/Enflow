@@ -152,15 +152,15 @@ public class MoveToTheNewOffice : Workflow<Department>
 }
 
 var moveToBoardWorkflow = new MoveHrPersonToNewDepartment(new InHrDepartmentRule())
-{
-    // Something like this would come from the DB in a less contrived example, of course.
-    Department = new Department 
-        { 
-            Name = "Board of Directors", 
-            EmployeeCount = 5,
-            Building = "Downtown Office"
-        };
-}
+    {
+        // Something like this would come from the DB in a less contrived example, of course.
+        Department = new Department 
+            { 
+                Name = "Board of Directors", 
+                EmployeeCount = 5,
+                Building = "Downtown Office"
+            };
+    };
 
 var moveDeptOfficeWorkflow = new MoveToTheNewOffice();
 
