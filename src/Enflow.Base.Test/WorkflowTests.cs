@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.Collections.Generic;
+using Xunit;
 using NSubstitute;
 
 namespace Enflow.Base.Test
@@ -8,38 +9,52 @@ namespace Enflow.Base.Test
         [Fact]
         public void ExecutesWithoutBusinessRule()
         {
-            var model = new CounterModel();
-            new CounterIncrementWorkflow().Execute(model);
+            var model = new GuidCount();
+            new GuidCountIncrementWorkflow().Execute(model);
             Assert.Equal(1, model.Counter);
         }
 
         [Fact]
         public void ValidatesPreBusinessRuleAndExecutes()
         {
-            var model = new CounterModel();
+            var model = new GuidCount();
 
-            var preRule = Substitute.For<IStateRule<CounterModel>>();
-            preRule.IsSatisfied(Arg.Any<CounterModel>()).Returns(true);
+            var preRule = Substitute.For<IStateRule<GuidCount>>();
+            preRule.IsSatisfied(Arg.Any<GuidCount>()).Returns(true);
 
-            new CounterIncrementWorkflow(preRule).Execute(model);
+            new GuidCountIncrementWorkflow(preRule).Execute(model);
             
             Assert.Equal(1, model.Counter);          
         }
 
         [Fact]
+        public void TypeModWorkflowExecutesCorrectly()
+        {
+            var model = new GuidCount();
+
+            var preRule = Substitute.For<IStateRule<GuidCount>>();
+            preRule.IsSatisfied(Arg.Any<GuidCount>()).Returns(true);
+
+            var result = new GuidCountDuplicateWorkflow(preRule).Execute(model);
+
+            Assert.IsType<List<GuidCount>>(result);
+            Assert.Equal(2, result.Count);     
+        }
+
+        [Fact]
         public void ThrowsErrorOnInvalidPreBusinessRuleAndDoesNotExecute()
         {
-            var model = new CounterModel();
+            var model = new GuidCount();
 
-            var preRule = Substitute.For<IStateRule<CounterModel>>();
-            preRule.IsSatisfied(Arg.Any<CounterModel>()).Returns(false);
+            var preRule = Substitute.For<IStateRule<GuidCount>>();
+            preRule.IsSatisfied(Arg.Any<GuidCount>()).Returns(false);
 
             const string description = "This mock rule must be satisfied.";
             preRule.Description = description;
             
-            var message = Assert.Throws(typeof(StateRuleException), () => new CounterIncrementWorkflow(preRule).Execute(model)).Message;
+            var message = Assert.Throws(typeof(StateRuleException), () => new GuidCountIncrementWorkflow(preRule).Execute(model)).Message;
             Assert.Equal(description, message);
             Assert.Equal(0, model.Counter);
-        }
+        } 
     }
 }

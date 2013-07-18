@@ -1,37 +1,42 @@
-﻿
-namespace Enflow.Base
+﻿namespace Enflow.Base
 {
-    /// <summary>Interface for transitioning Enflow model instances through workflows.</summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IWorkflow<in T> where T : IModel<T>
+    /// <summary>Interface for transitioning types through workflows.</summary>
+    public interface IWorkflow<T, U>
     {
-        void Execute(T candidate);
+        U Execute(T candidate);
     }
 
-    public abstract class Workflow<T> : IWorkflow<T> where T : IModel<T>
+    public interface IWorkflow<T> : IWorkflow<T, T> { }
+
+    public abstract class Workflow<T, U> : IWorkflow<T, U>
     {
-        private readonly IStateRule<T> _preStateRule;
+        protected readonly IStateRule<T> PreStateRule;
 
         protected Workflow() { }
-        protected Workflow(IStateRule<T> preStateRule) { _preStateRule = preStateRule; }
+        protected Workflow(IStateRule<T> preStateRule) { PreStateRule = preStateRule; }
 
         /// <summary>Validates the pre-condition state rule and executes the workflow logic.</summary>
         /// <param name="candidate"></param>
-        public virtual void Execute(T candidate)
+        public virtual U Execute(T candidate)
         {
-            ValidateStateRule(candidate, _preStateRule); 
-            ExecuteWorkflow(candidate);
-            // Todo: implement post-condition rule validation.
+            ValidateStateRule(candidate, PreStateRule); 
+            return ExecuteWorkflow(candidate);
         }
 
         /// <summary>Workflow logic not including pre-condition rule validation.</summary>
         /// <param name="candidate"></param>
-        protected abstract void ExecuteWorkflow(T candidate);
+        protected abstract U ExecuteWorkflow(T candidate);
 
         private static void ValidateStateRule(T candidate, IStateRule<T> rule)
         {
             if (rule == null) return;
             if (!rule.IsSatisfied(candidate)) throw new StateRuleException(rule.Description);
         }
+    }
+
+    public abstract class Workflow<T> : Workflow<T, T>
+    {
+        protected Workflow() { }
+        protected Workflow(IStateRule<T> preStateRule) : base(preStateRule) { }
     }
 }

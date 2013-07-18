@@ -48,10 +48,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FlowableTests.cs" />
     <Compile Include="StateRuleTests.cs" />
-    <Compile Include="ModelTests.cs" />
     <Compile Include="TestingImplementations.cs" />
-    <Compile Include="WorkflowFactoryTests.cs" />
     <Compile Include="WorkflowTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

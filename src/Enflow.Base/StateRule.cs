@@ -17,16 +17,16 @@ using System.Linq.Expressions;
 
 namespace Enflow.Base
 {
-    /// <summary>Interface for Enflow state rules. Can only be applied to core types.</summary>
+    /// <summary>Interface for Enflow state rules</summary>
     /// <typeparam name="T"></typeparam>
-    public interface IStateRule<T> where T : IModel<T>
+    public interface IStateRule<T>
     {
         Expression<Func<T, bool>> Predicate { get; }
         string Description { get; set; }
         bool IsSatisfied(T candidate);    
     }
 
-    public abstract class StateRule<T> : IStateRule<T> where T : IModel<T>
+    public abstract class StateRule<T> : IStateRule<T>
     {
         public abstract Expression<Func<T, bool>> Predicate { get; }
         public string Description { get; set; }
@@ -47,7 +47,7 @@ namespace Enflow.Base
 
     /// <summary>Composite state rule where both input rules must be satisfied.</summary>
     /// <typeparam name="T"></typeparam>
-    public class AndStateRule<T> : StateRule<T> where T : IModel<T> 
+    public class AndStateRule<T> : StateRule<T>
     {
         private readonly IStateRule<T> _ruleA;
         private readonly IStateRule<T> _ruleB;
@@ -66,7 +66,7 @@ namespace Enflow.Base
 
     /// <summary>Composite state rule where at least one of the input rules must be satisfied.</summary>
     /// <typeparam name="T"></typeparam>
-    public class OrStateRule<T> : StateRule<T> where T : IModel<T> 
+    public class OrStateRule<T> : StateRule<T>
     {
         private readonly IStateRule<T> _ruleA;
         private readonly IStateRule<T> _ruleB;
@@ -85,7 +85,7 @@ namespace Enflow.Base
 
     /// <summary>State rule that enforces a logical NOT of the input rule.</summary>
     /// <typeparam name="T"></typeparam>
-    public class NotStateRule<T> : StateRule<T> where T : IModel<T> 
+    public class NotStateRule<T> : StateRule<T>
     {
         private readonly IStateRule<T> _rule;
         internal NotStateRule(IStateRule<T> rule) { _rule = rule; }
@@ -99,22 +99,22 @@ namespace Enflow.Base
     /// <summary>Facilitates the fluent API for composing state rules from atomic constituents.</summary>
     public static class StateRuleFluentExtensions
     {
-        public static IStateRule<T> And<T>(this IStateRule<T> ruleA, IStateRule<T> ruleB) where T : IModel<T> 
+        public static IStateRule<T> And<T>(this IStateRule<T> ruleA, IStateRule<T> ruleB)
         {
             return new AndStateRule<T>(ruleA, ruleB);
         }
 
-        public static IStateRule<T> Or<T>(this IStateRule<T> ruleA, IStateRule<T> ruleB) where T : IModel<T> 
+        public static IStateRule<T> Or<T>(this IStateRule<T> ruleA, IStateRule<T> ruleB)
         {
             return new OrStateRule<T>(ruleA, ruleB);
         }
 
-        public static IStateRule<T> Not<T>(this IStateRule<T> rule) where T : IModel<T> 
+        public static IStateRule<T> Not<T>(this IStateRule<T> rule)
         {
             return new NotStateRule<T>(rule);
         }
 
-        public static IStateRule<T> Describe<T>(this IStateRule<T> rule, string description) where T : IModel<T>
+        public static IStateRule<T> Describe<T>(this IStateRule<T> rule, string description)
         {
             rule.Description = description;
             return rule;

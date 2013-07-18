@@ -6,19 +6,14 @@ using Xunit;
 
 namespace Enflow.Base.Test
 {
-    public class PositiveCounterRule : StateRule<CounterModel>
+    public class PositiveCounterRule : StateRule<GuidCount>
     {
-        public override Expression<Func<CounterModel, bool>> Predicate { get { return candidate => candidate.Counter > 0; } }
+        public override Expression<Func<GuidCount, bool>> Predicate { get { return candidate => candidate.Counter > 0; } }
     }
 
-    public class NegativeCounterRule : StateRule<CounterModel>
+    public class NegativeCounterRule : StateRule<GuidCount>
     {
-        public override Expression<Func<CounterModel, bool>> Predicate { get { return candidate => candidate.Counter < 0; } }
-    }
-
-    public class LessThanTenCounterRule : StateRule<CounterModel>
-    {
-        public override Expression<Func<CounterModel, bool>> Predicate { get { return candidate => candidate.Counter < 10; } }
+        public override Expression<Func<GuidCount, bool>> Predicate { get { return candidate => candidate.Counter < 0; } }
     }
 
     public class StateRuleTests
@@ -26,7 +21,7 @@ namespace Enflow.Base.Test
         [Fact]
         public void SimpleSatisfiedRuleReturnsTrue()
         {
-            var model = new CounterModel();
+            var model = new GuidCount();
             model.Increment();
             Assert.True(new PositiveCounterRule().IsSatisfied(model));
         }
@@ -41,7 +36,7 @@ namespace Enflow.Base.Test
         [Fact]
         public void OrExtensionEvaluatesCorrectly()
         {
-            var model = new CounterModel();
+            var model = new GuidCount();
             model.Increment();
             Assert.True(new PositiveCounterRule().Or(new NegativeCounterRule()).IsSatisfied(model));
         }
@@ -49,7 +44,7 @@ namespace Enflow.Base.Test
         [Fact]
         public void AndExtensionEvaluatesCorrectly()
         {
-            var model = new CounterModel();
+            var model = new GuidCount();
             model.Increment();
             Assert.False(new PositiveCounterRule().And(new NegativeCounterRule()).IsSatisfied(model));
         }
@@ -57,7 +52,7 @@ namespace Enflow.Base.Test
         [Fact]
         public void NotExtensionEvaluesCorrectly()
         {
-            var model = new CounterModel();
+            var model = new GuidCount();
             model.Increment();
             Assert.False(new PositiveCounterRule().Not().IsSatisfied(model));
         }
@@ -65,10 +60,10 @@ namespace Enflow.Base.Test
         [Fact]
         public void PredicateFiltersCorrectly()
         {
-            var validCandidate = new CounterModel { Counter = 1 };
-            var invalidCandidate = new CounterModel { Counter = -1 };
+            var validCandidate = new GuidCount { Counter = 1 };
+            var invalidCandidate = new GuidCount { Counter = -1 };
 
-            var candidates = new List<CounterModel> { validCandidate, invalidCandidate }.AsQueryable();
+            var candidates = new List<GuidCount> { validCandidate, invalidCandidate }.AsQueryable();
             var filtered = candidates.Where(new PositiveCounterRule().Predicate).ToList();
 
             Assert.Equal(1, filtered.Count);
@@ -78,10 +73,10 @@ namespace Enflow.Base.Test
         [Fact]
         public void AndPredicateFiltersCorrectly()
         {
-            var validCandidate = new CounterModel { Counter = 1 };
-            var invalidCandidate = new CounterModel { Counter = -1 };
+            var validCandidate = new GuidCount { Counter = 1 };
+            var invalidCandidate = new GuidCount { Counter = -1 };
 
-            var candidates = new List<CounterModel> { validCandidate, invalidCandidate }.AsQueryable();
+            var candidates = new List<GuidCount> { validCandidate, invalidCandidate }.AsQueryable();
             var filtered = candidates.Where(new PositiveCounterRule().And(new LessThanTenCounterRule()).Predicate).ToList();
 
             Assert.Equal(1, filtered.Count);
@@ -91,10 +86,10 @@ namespace Enflow.Base.Test
         [Fact]
         public void OrPredicateFiltersCorrectly()
         {
-            var validCandidate = new CounterModel { Counter = 1 };
-            var invalidCandidate = new CounterModel { Counter = 20 };
+            var validCandidate = new GuidCount { Counter = 1 };
+            var invalidCandidate = new GuidCount { Counter = 20 };
 
-            var candidates = new List<CounterModel> { validCandidate, invalidCandidate }.AsQueryable();
+            var candidates = new List<GuidCount> { validCandidate, invalidCandidate }.AsQueryable();
             var filtered = candidates.Where(new NegativeCounterRule().Or(new LessThanTenCounterRule()).Predicate).ToList();
 
             Assert.Equal(1, filtered.Count);
@@ -104,10 +99,10 @@ namespace Enflow.Base.Test
         [Fact]
         public void NotPredicateFiltersCorrectly()
         {
-            var validCandidate = new CounterModel { Counter = 1 };
-            var invalidCandidate = new CounterModel { Counter = -1 };
+            var validCandidate = new GuidCount { Counter = 1 };
+            var invalidCandidate = new GuidCount { Counter = -1 };
 
-            var candidates = new List<CounterModel> { validCandidate, invalidCandidate }.AsQueryable();
+            var candidates = new List<GuidCount> { validCandidate, invalidCandidate }.AsQueryable();
             var filtered = candidates.Where(new NegativeCounterRule().Not().Predicate).ToList();
 
             Assert.Equal(1, filtered.Count);

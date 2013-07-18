@@ -1,7 +1,6 @@
-Enflow
-======
+![](https://dl.dropboxusercontent.com/u/35984366/enflow_logo3_m.png)
 
-Enflow is a simple library for workflows and state/business rules. It is an ideal replacement for the _Unit of Work_ pattern popular in MVC applications, particularly where model state validation must accompany units of work.
+Enflow is a simple library for workflows and state/business rules. It is a potential replacement for the _Unit of Work_ pattern popular in MVC applications, particularly where model state validation must accompany units of work.
 
 Usage is not limited to MVC. Enflow is a [Portable Class Library](http://msdn.microsoft.com/en-us/library/gg597391.aspx) (PCL) and works across multiple platforms. For more information, including usage in _Mono for Android_ and _MonoTouch_, see [this blog post](http://slodge.blogspot.sk/2012/12/cross-platform-winrt-monodroid.html) by Stuart Lodge ([@slodge](https://twitter.com/slodge)).
 
@@ -9,20 +8,20 @@ Enflow is available via [NuGet](https://nuget.org/packages/Enflow/).
 
 ### Models
 
-Just mark your DTO/POCO models with the Enflow model interface.
-```csharp
-public class Employee : IModel<Employee>
-{
-	public string Name { get; set; }
-    public string Department { get; set; }
-    public string Salary { get; set; }
-}
-```
+Note: It is no longer necessary to mark models with the ```IModel<T>``` interface. This has been removed - Enflow is now much more versatile.
 
 ### State Rules
 
-Create rules based on your models and use the fluent API to create composite rules from atomic constituents.
+Create rules based on any type and use the fluent API to create composite rules from atomic constituents.
 ```csharp
+
+public class Employee
+{
+    public string Name { get; set; }
+    public string Department { get; set; }
+    public string Salary { get; set; }
+}
+
 public class MaxSalaryRule : StateRule<Employee>
 {
     public override Expression<Func<Employee, bool>>
@@ -50,9 +49,6 @@ var isEligible = salaryRaiseRule.IsSatified(someEmployee);
 // A rule can also be used to filter an IQueryable via the Predicate property.
 // Depending on the actual expression, this will also work with Linq-to-Entity.
 var eligibleEmployees = Employees.Where(salaryRaiseRule.Predicate);
-
-// Just compile the predicate to get a Func<T, bool> for filtering IEnumerable.
-var eligibleEmployees = Employees.Where(salaryRaiseRule.Predicate.Compile());
 ```
 
 ### Workflows
@@ -69,10 +65,11 @@ public class ApplySalaryRaise : Workflow<Employee>
         _repository = repository;
     }
 
-    protected override void ExecuteWorkflow(Employee candidate)
+    protected override Employee ExecuteWorkflow(Employee candidate)
     {
         candidate.Salary += 5000;
         _repository.Update(candidate);
+        return candidate;
     }
 }
 
@@ -94,124 +91,91 @@ var ineligibleEmployee = new Employee
 // Give the candidate employee a $5000 raise if they're in HR and they earn less than $40k.
 var salaryRaiseWorflow = new ApplySalaryRaise(salaryRaiseRule, new EmployeeRepository());
 
-// Will be granted the salary raise.
+// Input candidate will be granted the salary raise.
 salaryRaiseWorflow.Execute(eligibleEmployee); 
 
-// Will throw a StateRuleException.
+// This will throw a StateRuleException.
 salaryRaiseWorflow.Execute(ineligibleEmployee);
+```
 
-// It is also possible to chain multiple workflows using the fluent API.
+### Flowable
+
+Flowable is a type amplification wrapper that allows fluent, declaritive use of Enflow. 
+
+```csharp
+// It is possible to chain workflows using flowable.
 // This would apply two pay increases as long as the salary remained under $40k.
 eligibleEmployee
+    .AsFlowable()
     .Flow(salaryRaiseWorflow)
     .Flow(salaryRaiseWorflow);
 
+// State rule checks can also be applied directly to flowables.
+var canThisPersonGetMore = eligibleEmployee
+    .AsFlowable()
+    .Flow(salaryRaiseWorflow)
+    .Satisfies(salaryRaiseRule);
+```
+
+An ```IWorkflow<T>``` returns _T_ from its call to _Execute_. Using ```IWorkflow<T, U>``` we can chain together sequences of actions that pass different types between them.
+
+```csharp
+public class Department
+{
+    public string Name { get; set; }
+    public int EmployeeCount { get; set; }
+    public string Building { get; set; }
+}
+
+// These examples have the repository/persistence code omitted for clarity.
+
+public class MoveHrPersonToNewDepartment : Workflow<Employee, Department>
+{
+    public Department Destination { get; set; }
+
+    protected override Department ExecuteWorkflow(Employee candidate)
+    {
+        candidate.Department = Destination.Name;
+        return Destination;
+    }
+}
+
+public class MoveToTheNewOffice : Workflow<Department>
+{
+    public Department Destination { get; set; }
+
+    protected override Department ExecuteWorkflow(Department candidate)
+    {
+        candidate.Building = "Uptown Office";
+        return candidate;
+    }
+}
+
+var moveToBoardWorkflow = new MoveHrPersonToNewDepartment(new InHrDepartmentRule())
+{
+    // Something like this would come from the DB in a less contrived example, of course.
+    Department = new Department 
+        { 
+            Name = "Board of Directors", 
+            EmployeeCount = 5,
+            Building = "Downtown Office"
+        };
+}
+
+var moveDeptOfficeWorkflow = new MoveToTheNewOffice();
+
+var employeeLocation = eligibleEmployee
+    .AsFlowable()
+    .Flow(salaryRaiseWorflow)
+    .Flow(moveToBoardWorkflow)
+    .Flow(moveDeptOfficeWorkflow)
+    .Value
+    .Building; // "Uptown Office"
 ```
 
 ### The Workflow Factory
 
-When using Enflow in small MVC applications it is acceptable to inject workflows directly into controllers. However if a controller depends on multiple workflows, consider the _WorkflowFactory_.
-
-#### Stand Alone Example
-
-```csharp
-// Not strictly necessary, but allows intellisense for named resolutions.
-public static class Workflows
-{
-    public const string SalaryRaise = "Salary Raise";
-}
-
-public class StandAloneWorkflowFactory : WorkflowFactory
-{
-    public StandAloneWorkflowFactory()
-    {
-        Register(Workflows.SalaryRaise, () => new ApplySalaryRaise(
-            new MaxSalaryRule()
-                .And(new InHrDepartmentRule())
-                .Describe("Employee must be in the HR deparment and have a salary less than $40,000."), 
-            new EmployeeRepository()));
-        
-        // Register other workflows...
-    }
-}
-
-// Controllers requiring the factory will inherit from this.
-public abstract class WorkflowController : Controller
-{
-    protected readonly IWorkflowFactory WorkflowFactory;
-
-    protected WorkflowController(IWorkflowFactory workflowFactory)
-    {
-        WorkflowFactory = workflowFactory;
-    }
-}
-
-public class WorkflowControllerFactory : DefaultControllerFactory
-{
-    protected override IController GetControllerInstance(RequestContext context, Type controllerType)
-    {
-        if (typeof(WorkflowController).IsAssignableFrom(controllerType))
-            return (WorkflowController)Activator
-                .CreateInstance(controllerType, new object[] { new StandAloneWorkflowFactory() });
-
-        return base.GetControllerInstance(context, controllerType);
-    }
-}
-
-// In Application_Start()
-ControllerBuilder.Current.SetControllerFactory(new WorkflowControllerFactory());
-
-// Then when a workflow is required in a controller method...
-var workflow = WorkflowFactory.Get<Employee>(Workflows.SalaryRaise);
-```
-
-#### Autofac Example
-
-```csharp
-// When combined with an IoC container, the factory is just an indirection for MVC's inbuilt Service Locator.
-public class AutofacWorkflowFactory : IWorkflowFactory
-{
-    public IWorkflow<T> Get<T>(string name) where T : IModel<T>
-    {
-        return ((AutofacDependencyResolver)DependencyResolver.Current)
-            .RequestLifetimeScope.ResolveNamed<IWorkflow<T>>(name);
-    }
-}
-
-public class MvcApplication : System.Web.HttpApplication
-{
-    protected void Application_Start()
-    {
-        var builder = new ContainerBuilder();
-        builder.RegisterControllers(typeof(MvcApplication).Assembly);
-
-        // Register model binders etc...
-        // Register repositories...
-
-        const string salaryAndDeptRule = "SalaryAndDeptRule";
-
-        builder.Register(c => new MaxSalaryRule()
-            .And(new InHrDepartmentRule())
-            .Describe("Employee must be in the HR deparment and have a salary less than $40,000."))
-                .Named<IStateRule<Employee>>(salaryAndDeptRule)
-                .InstancePerHttpRequest();
-
-        builder.Register(c => new ApplySalaryRaise(
-            c.ResolveNamed<IStateRule<Employee>>(salaryAndDeptRule), 
-            c.Resolve<IRepository<Employee>>()))
-                .Named<IWorkflow<Employee>>(Workflows.SalaryRaise)
-                .InstancePerHttpRequest();
-
-        builder.Register(c => new AutofacWorkflowFactory())
-            .As<IWorkflowFactory>()
-            .InstancePerHttpRequest();
-
-        DependencyResolver.SetResolver(new AutofacDependencyResolver(builder.Build()));
-
-        // Other setup...
-    }
-}
-```
+Note: The workflow factory has been removed from Enflow.
 
 ### License
 
