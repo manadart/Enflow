@@ -143,8 +143,6 @@ public class MoveHrPersonToNewDepartment : Workflow<Employee, Department>
 
 public class MoveToTheNewOffice : Workflow<Department>
 {
-    public Department Destination { get; set; }
-
     protected override Department ExecuteWorkflow(Department candidate)
     {
         candidate.Building = "Uptown Office";
