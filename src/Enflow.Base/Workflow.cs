@@ -34,7 +34,7 @@
         }
     }
 
-    public abstract class Workflow<T> : Workflow<T, T>
+    public abstract class Workflow<T> : Workflow<T, T>, IWorkflow<T>
     {
         protected Workflow() { }
         protected Workflow(IStateRule<T> preStateRule) : base(preStateRule) { }

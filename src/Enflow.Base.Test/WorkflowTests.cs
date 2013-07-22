@@ -56,5 +56,12 @@ namespace Enflow.Base.Test
             Assert.Equal(description, message);
             Assert.Equal(0, model.Counter);
         } 
+
+        [Fact]
+        public void WorkflowOfTAssignabletoIWorkflowOfT()
+        {
+            var workflow = new GuidCountIncrementWorkflow(Substitute.For<IStateRule<GuidCount>>());
+            Assert.NotNull(workflow as IWorkflow<GuidCount>);
+        }
     }
 }
