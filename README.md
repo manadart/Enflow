@@ -2,7 +2,7 @@
 
 Enflow is a simple library for workflows and state/business rules. It is a potential replacement for the _Unit of Work_ pattern popular in MVC applications, particularly where model state validation must accompany units of work.
 
-Usage is not limited to MVC. Enflow is a [Portable Class Library](http://msdn.microsoft.com/en-us/library/gg597391.aspx) (PCL) and works across multiple platforms. For more information, including usage in _Xamarin.Android_ and _Xamarin.iOS_, see [this blog post](http://slodge.blogspot.sk/2012/12/cross-platform-winrt-monodroid.html) (and [update](http://slodge.blogspot.ca/2013/04/my-current-pcl-setup-in-visual-studio.html)) by Stuart Lodge ([@slodge](https://twitter.com/slodge)). _Note: Currently experiencing a problem targeting Xamarin.Android and MonoTouch. Working to resolve._
+Usage is not limited to MVC. Enflow is a [Portable Class Library](http://msdn.microsoft.com/en-us/library/gg597391.aspx) (PCL) and works across multiple platforms. For more information, including usage in _Xamarin.Android_ and _Xamarin.iOS_, see [this blog post](http://slodge.blogspot.sk/2012/12/cross-platform-winrt-monodroid.html) (and [update](http://slodge.blogspot.ca/2013/04/my-current-pcl-setup-in-visual-studio.html)) by Stuart Lodge ([@slodge](https://twitter.com/slodge)). _Note: Currently experiencing a problem targeting Xamarin.Android and Xamarin.iOS. Working to resolve._
 
 Enflow is available via [NuGet](https://nuget.org/packages/Enflow/).
 
@@ -47,7 +47,7 @@ var salaryRaiseRule = new MaxSalaryRule()
 var isEligible = salaryRaiseRule.IsSatified(someEmployee);
 
 // A rule can also be used to filter an IQueryable via the Predicate property.
-// Depending on the actual expression, this will also work with Linq-to-Entity.
+// Depending on the actual expression, this will also work with LINQ to Entities.
 var eligibleEmployees = Employees.Where(salaryRaiseRule.Predicate);
 ```
 
